@@ -46,13 +46,13 @@ def answer_chat(message):
     bot.send_message(chat_id=message.chat.id, text=f"Yandex answer:\n"
                                                    f"{response_json['result']['alternatives'][0]['message']['text']}")
 
-    #answer_openai = client.chat.completions.create(
-    #    model=openaiModel,
-    #    messages=[
-    #        {'role': 'user', 'content': text}
-    #    ]
-    #)
-    #bot.send_message(chat_id=message.chat.id, text=f"OpenAI answer:\n{answer_openai.choices[0].message}")
+    answer_openai = client.chat.completions.create(
+        model=openaiModel,
+        messages=[
+            {'role': 'user', 'content': text}
+        ]
+    )
+    bot.send_message(chat_id=message.chat.id, text=f"OpenAI answer:\n{answer_openai.choices[0].message}")
 
 
 if __name__ == "__main__":
