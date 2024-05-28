@@ -1,0 +1,15 @@
+docker-build:
+  tags:
+    - docker
+    - k8s
+  image: gcr.io/kaniko-project/executor:debug
+  stage: build
+  services:
+   - docker:dind
+  variables:
+    TAG: "${CI_COMMIT_REF_SLUG}-0.1.${CI_PIPELINE_ID}"
+    CI_REGISTRY_IMAGE: gitlab.nau.io:5050/go/nauadvisor/app
+  script:
+      - mkdir -p /kaniko/.docker
+      - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+      - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:$TAG --cleanup
