@@ -41,10 +41,10 @@ def answer_chat(message):
         'Content-Type': 'application/json',
         'Authorization': f'Api-Key {Yandex_Token}'
     }
-    response = requests.post(url=yandex_url, headers=headers, json=yandex_prompt)
-    response_json = json.loads(response.text.replace("\'", '\"'))
-    bot.send_message(chat_id=message.chat.id, text=f"Yandex answer:\n"
-                                                   f"{response_json['result']['alternatives'][0]['message']['text']}")
+    # response = requests.post(url=yandex_url, headers=headers, json=yandex_prompt)
+    # response_json = json.loads(response.text.replace("\'", '\"'))
+    # bot.send_message(chat_id=message.chat.id, text=f"Yandex answer:\n"
+    #                                                f"{response_json['result']['alternatives'][0]['message']['text']}")
     try:
         answer_openai = client.chat.completions.create(
             model=openaiModel,
@@ -52,9 +52,9 @@ def answer_chat(message):
                 {'role': 'user', 'content': text}
             ]
         )
-        bot.send_message(chat_id=message.chat.id, text=f"OpenAI answer:\n{answer_openai.choices[0].message}")
+        bot.send_message(chat_id=message.chat.id, text=f"OpenAI answer:\n{answer_openai.choices[0].message.content}")
     except Exception as exception:
-        bot.send_message(chat_id=message.chat.id, text=f"OpenAI answer:\n{exception}")
+        bot.send_message(chat_id=message.chat.id, text=f"OpenAI exception:\n{exception}")
 
 
 if __name__ == "__main__":
