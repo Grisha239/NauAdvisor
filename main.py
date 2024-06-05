@@ -58,8 +58,8 @@ def answer_chat(message):
                 {'role': 'user', 'content': text}
             ]
         )
-        conversation = database.get(message.from_id)
-        database.set(message.from_id, conversation + message.from_id + answer_openai.choices[0].message.content)
+        conversation = database.get(message.from_user.id)
+        database.set(message.from_user.id, conversation + text + answer_openai.choices[0].message.content)
         bot.send_message(chat_id=message.chat.id, text=f"OpenAI answer:\n{answer_openai.choices[0].message.content}")
         bot.send_message(chat_id=message.chat.id, text=f"Conversation:\n{conversation}")
     except Exception as exception:
