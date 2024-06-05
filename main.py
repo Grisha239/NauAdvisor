@@ -58,7 +58,10 @@ def answer_chat(message):
                 {'role': 'user', 'content': text}
             ]
         )
-        conversation = database.get(message.from_user.id)
+        if database.exists(message.from_user.id):
+            conversation = database.get(message.from_user.id)
+        else:
+            conversation = ""
         database.set(message.from_user.id, str(conversation) + str(text) + str(answer_openai.choices[0].message.content))
         bot.send_message(chat_id=message.chat.id, text=f"OpenAI answer:\n{answer_openai.choices[0].message.content}")
         bot.send_message(chat_id=message.chat.id, text=f"Conversation:\n{conversation}")
