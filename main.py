@@ -34,15 +34,19 @@ def answer_chat(message):
                 {'role': 'user', 'content': text}
             ]
         )
-        if database.exists(message.from_user.id):
-            conversation = database.get(message.from_user.id)
-        else:
-            conversation = ""
-        database.set(message.from_user.id, "Hello World")
         bot.send_message(chat_id=message.chat.id, text=f"OpenAI answer:\n{answer_openai.choices[0].message.content}")
-        bot.send_message(chat_id=message.chat.id, text=f"Conversation:\n{conversation}")
     except Exception as exception:
         bot.send_message(chat_id=message.chat.id, text=f"OpenAI exception:\n{exception}")
+
+    try:
+        conversation = ""
+        if database.exists(message.from_user.id):
+            conversation = database.get(message.from_user.id)
+        database.set(message.from_user.id, "Hello World")
+        bot.send_message(chat_id=message.chat.id, text=f"Conversation:\n{conversation}")
+    except Exception as exception:
+        bot.send_message(chat_id=message.chat.id, text=f"Redis exception:\n{exception}")
+
 
 
 if __name__ == "__main__":
