@@ -27,6 +27,7 @@ try:
 except Exception as exception:
     bot.send_message(chat_id=-4048345106, text=f"Redis exception:\n{exception}")
 
+
 @bot.message_handler(commands=['gpt'])
 def answer_chat(message):
     text = message.text.replace('/gpt', '')
@@ -44,7 +45,6 @@ def answer_chat(message):
 
     try:
         database.set("Hello", "World")
-        bot.send_message(chat_id=message.chat.id, text=f"Conversation:\n{text}")
     except Exception as exception2:
         bot.send_message(chat_id=message.chat.id, text=f"Redis exception:\n{exception2}")
 
