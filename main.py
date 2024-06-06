@@ -26,7 +26,6 @@ database = redis.Redis(host=redis_host, port=redis_port, db=0)
 @bot.message_handler(commands=['gpt'])
 def answer_chat(message):
     text = message.text.replace('/gpt', '')
-    bot.send_message(chat_id=message.chat.id, text=f"Message:\n{message}")
 
     try:
         answer_openai = client.chat.completions.create(
@@ -40,7 +39,7 @@ def answer_chat(message):
         bot.send_message(chat_id=message.chat.id, text=f"OpenAI exception:\n{exception}")
 
     try:
-        database.set(name=message.from_user.id, value=text)
+        database.set(name=str(message.from_user.id), value=str(text))
         bot.send_message(chat_id=message.chat.id, text=f"Conversation:\n{text}")
     except Exception as exception:
         bot.send_message(chat_id=message.chat.id, text=f"Redis exception:\n{exception}")
