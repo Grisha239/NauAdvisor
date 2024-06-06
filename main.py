@@ -26,6 +26,7 @@ database = redis.Redis(host=redis_host, port=redis_port, db=0)
 @bot.message_handler(commands=['gpt'])
 def answer_chat(message):
     text = message.text.replace('/gpt', '')
+    bot.send_message(chat_id=message.chat.id, text=f"Message:\n{message}")
 
     try:
         answer_openai = client.chat.completions.create(
