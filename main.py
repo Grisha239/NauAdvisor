@@ -39,11 +39,8 @@ def answer_chat(message):
         bot.send_message(chat_id=message.chat.id, text=f"OpenAI exception:\n{exception}")
 
     try:
-        conversation = ""
-        if database.exists(message.from_user.id):
-            conversation = database.get(name=message.from_user.id)
-        database.set(name=message.from_user.id, value=str(conversation + text))
-        bot.send_message(chat_id=message.chat.id, text=f"Conversation:\n{conversation}")
+        database.set(name=message.from_user.id, value=text)
+        bot.send_message(chat_id=message.chat.id, text=f"Conversation:\n{text}")
     except Exception as exception:
         bot.send_message(chat_id=message.chat.id, text=f"Redis exception:\n{exception}")
 
