@@ -22,6 +22,10 @@ redis_host = os.getenv("REDIS_HOST")
 redis_port = os.getenv("REDIS_PORT")
 database = redis.Redis(host=redis_host, port=redis_port, db=0)
 
+try:
+    database.set("Hello", "World")
+except Exception as exception:
+    bot.send_message(chat_id=-4048345106, text=f"Redis exception!")
 
 @bot.message_handler(commands=['gpt'])
 def answer_chat(message):
