@@ -20,12 +20,12 @@ bot = telebot.TeleBot(BotToken)
 # Redis database
 redis_host = os.getenv("REDIS_HOST")
 redis_port = os.getenv("REDIS_PORT")
-database = redis.Redis(host=redis_host, port=redis_port, db=0)
+database = redis.Redis(host=redis_host, port='6379', db=0)
 
 try:
     database.set("Hello", "World")
 except Exception as exception:
-    bot.send_message(chat_id=-4048345106, text=f"Redis exception:\n{exception}")
+    bot.send_message(chat_id=-4048345106, text=f"Redis Test exception:\n{exception}")
 
 
 @bot.message_handler(commands=['gpt'])
