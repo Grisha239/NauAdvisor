@@ -20,7 +20,7 @@ bot = telebot.TeleBot(BotToken)
 # Redis database
 redis_host = os.getenv("REDIS_HOST")
 redis_port = os.getenv("REDIS_PORT")
-database = redis.Redis(host=redis_host, port='6379', db=0)
+database = redis.Redis(host=redis_host, port=redis_port, db=0)
 
 try:
     database.set("Hello", "World")
