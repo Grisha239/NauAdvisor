@@ -47,6 +47,13 @@ def answer_chat(message):
         bot.send_message(chat_id=message.chat.id, text=f"OpenAI exception:\n{exception}")
 
 
+@bot.message_handler(commands=['clear'])
+def answer_chat(message):
+    text = message.text
+    if text == "/clear":
+        database.delete(message.from_user.id)
+
+
 if __name__ == "__main__":
     print("Bot is running")
     bot.polling()
