@@ -28,14 +28,13 @@ def answer_chat(message):
     text = message.text.replace('/gpt', '')
 
     try:
-        conversation = [] + database.get(message.from_user.id)
-        if conversation:
-            conversation.append({"role": "user", "content": text})
+        if database.get(message.from_user.id):
+            conversation = database.get(message.from_user.id)
         else:
             conversation = [
-                {"role": "system", "content": "You are helpful assistant"},
-                {"role": "user", "content": text}
+                {"role": "system", "content": "You are helpful assistant"}
             ]
+        conversation.append({"role": "user", "content": text})
         answer_openai = client.chat.completions.create(
             model=openaiModel,
             messages=conversation
