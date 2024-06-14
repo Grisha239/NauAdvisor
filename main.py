@@ -22,31 +22,29 @@ redis_host = os.getenv("REDIS_HOST")
 redis_port = os.getenv("REDIS_PORT")
 database = redis.Redis(host=redis_host, port=redis_port, db=0)
 
-try:
-    database.set("Hello", "World")
-except Exception as exceptionTest:
-    bot.send_message(chat_id=-4048345106, text=f"Redis Test exception:\n{exceptionTest}")
-
 
 @bot.message_handler(commands=['gpt'])
 def answer_chat(message):
     text = message.text.replace('/gpt', '')
 
     try:
+        conversation = [] + database.get(message.from_user.id)
+        if conversation:
+            conversation.append({"role": "user", "content": text})
+        else:
+            conversation = [
+                {"role": "system", "content": "You are helpful assistant"},
+                {"role": "user", "content": text}
+            ]
         answer_openai = client.chat.completions.create(
             model=openaiModel,
-            messages=[
-                {'role': 'user', 'content': text}
-            ]
+            messages=conversation
         )
+        conversation.append({"role": "assistant", "content": answer_openai.choices[0].message.content})
+        database.set(message.from_user.id, conversation)
         bot.send_message(chat_id=message.chat.id, text=f"OpenAI answer:\n{answer_openai.choices[0].message.content}")
     except Exception as exception:
         bot.send_message(chat_id=message.chat.id, text=f"OpenAI exception:\n{exception}")
-
-    try:
-        database.set("Hello", "World")
-    except Exception as exception:
-        bot.send_message(chat_id=message.chat.id, text=f"Redis exception:\n{exception}")
 
 
 if __name__ == "__main__":
