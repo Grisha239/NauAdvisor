@@ -54,6 +54,19 @@ def answer_chat(message):
         database.delete(message.from_user.id)
 
 
+@bot.message_handler(commands=['start'])
+def start_chat(message):
+    bot.send_message(chat_id=message.chat.id,
+                     text=f"Привет! Это бот для удобной работы с ChatGPT от команды nau.\n\n"
+                          f"Общаясь с этим ботом, вы соглашаетесь на то, что все ваши запросы могут быть использованы в аналитических целях и для обучения моделей.\n\n"
+                          f"Доступные команды:\n"
+                          f"/gpt - запрос в модель\n"
+                          f"/clear - очистить контекст диалога\n"
+                          f"/disable_context - отключить контекст\n"
+                          f"/enable_context - включить контекст\n"
+                          f"ВНИМАНИЕ! Пожалуйста, не отправляйте в запросах информацию, которая содержит NDA или другие приватные или персональные данные.")
+
+
 if __name__ == "__main__":
     print("Bot is running")
     bot.polling()
