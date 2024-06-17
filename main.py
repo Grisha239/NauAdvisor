@@ -29,19 +29,24 @@ def answer_chat(message):
     text = message.text.replace('/gpt', '')
 
     try:
-        if database.get(message.from_user.id):
-            conversation = json.loads(database.get(message.from_user.id))
+        info = database.get(message.from_user.id)
+        if info:
+            info = json.loads(info)
         else:
-            conversation = [
-                {"role": "system", "content": "You are helpful assistant"}
-            ]
-        conversation.append({"role": "user", "content": text})
-        answer_openai = client.chat.completions.create(
-            model=openaiModel,
-            messages=conversation
-        )
-        conversation.append({"role": "assistant", "content": answer_openai.choices[0].message.content})
-        database.set(message.from_user.id, json.dumps(conversation))
+            info = default_db_info()
+        info.conversation.append({"role": "user", "content": text})
+
+        if info.context:
+            answer_openai = client.chat.completions.create(
+                model=openaiModel,
+                messages=info.conversation)
+        else:
+            answer_openai = client.chat.completions.create(
+                model=openaiModel,
+                messages=default_db_info().conversation.append({"role": "user", "content": text}))
+
+        info.conversation.append({"role": "assistant", "content": answer_openai.choices[0].message.content})
+        database.set(message.from_user.id, json.dumps(info))
         bot.send_message(chat_id=message.chat.id, text=f"OpenAI answer:\n{answer_openai.choices[0].message.content}")
     except Exception as exception:
         bot.send_message(chat_id=message.chat.id, text=f"OpenAI exception:\n{exception}")
@@ -51,11 +56,33 @@ def answer_chat(message):
 def answer_chat(message):
     text = message.text
     if text == "/clear":
-        database.delete(message.from_user.id)
+        database.set(message.from_user.id, json.dumps(default_db_info()))
+    bot.send_message(chat_id=message.chat.id, text=f"Предыдущий диалог был удалён")
+
+
+@bot.message_handler(commands=['disable_context'])
+def answer_chat(message):
+    info = database.get(message.from_user.id)
+    if info:
+        info = json.loads(info)
+        info.context = False
+        database.set(message.from_user.id, json.dumps(info))
+    bot.send_message(chat_id=message.chat.id, text=f"Сейчас контекст: Не используется")
+
+
+@bot.message_handler(commands=['enable_context'])
+def answer_chat(message):
+    info = database.get(message.from_user.id)
+    if info:
+        info = json.loads(info)
+        info.context = True
+        database.set(message.from_user.id, json.dumps(info))
+    bot.send_message(chat_id=message.chat.id, text=f"Сейчас контекст: Используется")
 
 
 @bot.message_handler(commands=['start'])
 def start_chat(message):
+    database.set(message.from_user.id, json.dumps(default_db_info()))
     bot.send_message(chat_id=message.chat.id,
                      text="Привет! Это бот для удобной работы с ChatGPT от команды nau.\n\n"
                           "Общаясь с этим ботом, вы соглашаетесь на то, что все ваши запросы могут быть использованы в аналитических целях и для обучения моделей.\n\n"
@@ -66,6 +93,13 @@ def start_chat(message):
                           "/enable_context - включить контекст\n\n"
                           "<b>ВНИМАНИЕ!</b> Пожалуйста, не отправляйте в запросах информацию, которая содержит NDA или другие приватные или персональные данные.",
                      parse_mode='HTML')
+
+
+def default_db_info():
+    return {"conversation": [
+                {"role": "system", "content": "You are helpful assistant"}
+            ],
+            "context": True}
 
 
 if __name__ == "__main__":
