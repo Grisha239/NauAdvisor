@@ -11,7 +11,7 @@ load_dotenv()
 
 # OpenAI GPT
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-openaiModel = 'gpt-3.5-turbo-0125'
+openaiModel = 'gpt-4o'
 client = OpenAI(api_key=OPENAI_API_KEY)
 
 # Telegram bot
