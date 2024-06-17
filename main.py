@@ -33,6 +33,11 @@ def answer_chat(message):
         if info:
             info = json.loads(info)
             info["conversation"].append({"role": "user", "content": text})
+        else:
+            info = {"conversation": [
+                {"role": "system", "content": "You are helpful assistant"},
+                {"role": "user", "content": text}],
+                "context": True}
 
         if info["context"]:
             answer_openai = client.chat.completions.create(
@@ -98,9 +103,8 @@ def start_chat(message):
 
 def default_db_info():
     return {"conversation": [
-                {"role": "system", "content": "You are helpful assistant"}
-            ],
-            "context": True}
+        {"role": "system", "content": "You are helpful assistant"}],
+        "context": True}
 
 
 if __name__ == "__main__":
