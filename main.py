@@ -32,20 +32,21 @@ def answer_chat(message):
         info = database.get(message.from_user.id)
         if info:
             info = json.loads(info)
-        else:
-            info = default_db_info()
-        info.conversation.append({"role": "user", "content": text})
+            info["conversation"].append({"role": "user", "content": text})
 
         if info.context:
             answer_openai = client.chat.completions.create(
                 model=openaiModel,
-                messages=info.conversation)
+                messages=info["conversation"])
         else:
             answer_openai = client.chat.completions.create(
                 model=openaiModel,
-                messages=default_db_info().conversation.append({"role": "user", "content": text}))
+                messages=[
+                    {"role": "system", "content": "You are helpful assistant"},
+                    {"role": "user", "content": text},
+                ])
 
-        info.conversation.append({"role": "assistant", "content": answer_openai.choices[0].message.content})
+        info["conversation"].append({"role": "assistant", "content": answer_openai.choices[0].message.content})
         database.set(message.from_user.id, json.dumps(info))
         bot.send_message(chat_id=message.chat.id, text=f"OpenAI answer:\n{answer_openai.choices[0].message.content}")
     except Exception as exception:
@@ -96,10 +97,10 @@ def start_chat(message):
 
 
 def default_db_info():
-    return dict({"conversation": [
+    return {"conversation": [
                 {"role": "system", "content": "You are helpful assistant"}
             ],
-            "context": True})
+            "context": True}
 
 
 if __name__ == "__main__":
