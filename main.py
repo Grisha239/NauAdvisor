@@ -24,7 +24,7 @@ redis_port = os.getenv("REDIS_PORT")
 database = redis.Redis(host=redis_host, port=redis_port, db=0)
 
 
-@bot.message_handler(func=lambda message: message.text & message.text[0] != "/")
+@bot.message_handler(func=lambda message: message.text[0] != "/")
 def answer_chat(message):
     text = message.text
 
