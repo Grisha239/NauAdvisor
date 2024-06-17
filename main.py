@@ -34,7 +34,7 @@ def answer_chat(message):
             info = json.loads(info)
             info["conversation"].append({"role": "user", "content": text})
 
-        if info.context:
+        if info["context"]:
             answer_openai = client.chat.completions.create(
                 model=openaiModel,
                 messages=info["conversation"])
@@ -66,7 +66,7 @@ def answer_chat(message):
     info = database.get(message.from_user.id)
     if info:
         info = json.loads(info)
-        info.context = False
+        info["context"] = False
         database.set(message.from_user.id, json.dumps(info))
     bot.send_message(chat_id=message.chat.id, text=f"Сейчас контекст: Не используется")
 
@@ -76,7 +76,7 @@ def answer_chat(message):
     info = database.get(message.from_user.id)
     if info:
         info = json.loads(info)
-        info.context = True
+        info["context"] = True
         database.set(message.from_user.id, json.dumps(info))
     bot.send_message(chat_id=message.chat.id, text=f"Сейчас контекст: Используется")
 
