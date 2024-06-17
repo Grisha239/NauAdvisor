@@ -24,9 +24,9 @@ redis_port = os.getenv("REDIS_PORT")
 database = redis.Redis(host=redis_host, port=redis_port, db=0)
 
 
-@bot.message_handler(commands=['gpt'])
+@bot.message_handler()
 def answer_chat(message):
-    text = message.text.replace('/gpt', '')
+    text = message.text
 
     try:
         info = database.get(message.from_user.id)
