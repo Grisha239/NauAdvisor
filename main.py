@@ -96,10 +96,10 @@ def start_chat(message):
 
 
 def default_db_info():
-    return {"conversation": [
+    return dict({"conversation": [
                 {"role": "system", "content": "You are helpful assistant"}
             ],
-            "context": True}
+            "context": True})
 
 
 if __name__ == "__main__":
