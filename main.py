@@ -101,7 +101,7 @@ def start_chat(message):
 
 
 def send_message(chat_id, text):
-    while text.length() >= 4000:
+    while len(text) >= 4000:
         bot.send_message(chat_id=chat_id, text=text[:4000])
         text = text[4000:]
     bot.send_message(chat_id=chat_id, text=text)
