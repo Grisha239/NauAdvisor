@@ -53,7 +53,7 @@ def answer_chat(message):
 
         info["conversation"].append({"role": "assistant", "content": answer_openai.choices[0].message.content})
         database.set(message.from_user.id, json.dumps(info))
-        bot.send_message(chat_id=message.chat.id, text=f"OpenAI answer:\n{answer_openai.choices[0].message.content}")
+        send_message(chat_id=message.chat.id, text=f"OpenAI answer:\n{answer_openai.choices[0].message.content}")
     except Exception as exception:
         bot.send_message(chat_id=message.chat.id, text=f"OpenAI exception:\n{exception}")
 
@@ -100,6 +100,13 @@ def start_chat(message):
                      parse_mode='HTML')
 
 
+def send_message(chat_id, text):
+    while text.length() >= 4000:
+        bot.send_message(chat_id=chat_id, text=text[:4000])
+        text = text[4000:]
+    bot.send_message(chat_id=chat_id, text=text)
+
+
 def default_db_info():
     return {"conversation": [
         {"role": "system", "content": "You are helpful assistant"}],
@@ -108,4 +115,4 @@ def default_db_info():
 
 if __name__ == "__main__":
     print("Bot is running")
-    bot.polling()
+    bot.infinity_polling()
