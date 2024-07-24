@@ -6,7 +6,9 @@ from openai import OpenAI
 import requests
 import redis
 import json
+import logging
 
+logger = logging.getLogger(__name__)
 load_dotenv()
 
 # OpenAI GPT
@@ -26,6 +28,7 @@ database = redis.Redis(host=redis_host, port=redis_port, db=0)
 
 @bot.message_handler(func=lambda message: message.text[0] != "/")
 def answer_chat(message):
+    logger.info('Received message from user ' + message.from_user.id)
     text = message.text
 
     try:
@@ -60,6 +63,7 @@ def answer_chat(message):
 
 @bot.message_handler(commands=['clear'])
 def answer_chat(message):
+    logger.info('Clear command from user ' + message.from_user.id)
     text = message.text
     if text == "/clear":
         database.set(message.from_user.id, json.dumps(default_db_info()))
@@ -68,6 +72,7 @@ def answer_chat(message):
 
 @bot.message_handler(commands=['disable_context'])
 def answer_chat(message):
+    logger.info('Disable_context command from user ' + message.from_user.id)
     info = database.get(message.from_user.id)
     if info:
         info = json.loads(info)
@@ -78,6 +83,7 @@ def answer_chat(message):
 
 @bot.message_handler(commands=['enable_context'])
 def answer_chat(message):
+    logger.info('Enable_context command from user ' + message.from_user.id)
     info = database.get(message.from_user.id)
     if info:
         info = json.loads(info)
@@ -88,6 +94,7 @@ def answer_chat(message):
 
 @bot.message_handler(commands=['start'])
 def start_chat(message):
+    logger.info('Start command from user ' + message.from_user.id)
     database.set(message.from_user.id, json.dumps(default_db_info()))
     bot.send_message(chat_id=message.chat.id,
                      text="Привет! Это бот для удобной работы с ChatGPT от команды nau.\n\n"
@@ -114,5 +121,7 @@ def default_db_info():
 
 
 if __name__ == "__main__":
+    logging.basicConfig(filename='telegrambot.log', level=logging.INFO)
+    logger.info('Started')
     print("Bot is running")
     bot.infinity_polling()
